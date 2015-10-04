@@ -8,7 +8,6 @@ if (!window.console) {
 
 BaseViewModel = Base.extend({
   constructor : function() {
-    console.log('Initializing base view model');
     this.base();
   },
   // ----------------------------------------------------------------
