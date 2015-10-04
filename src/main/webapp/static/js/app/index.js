@@ -3,7 +3,5 @@ IndexViewModel = BaseViewModel.extend({
     "use strict";
     this.base();
     console.log('Initializing index view model');
-
-    var self = this;
   }
 });
