@@ -11,6 +11,7 @@ object ScalaTechnologyPartyBuild extends Build {
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.11.7"
   val ScalatraVersion = "2.4.0-RC2-2"
+  val jettyVersion = "9.1.3.v20140225"
 
   lazy val project = Project (
     "scala-technology-party",
@@ -23,12 +24,17 @@ object ScalaTechnologyPartyBuild extends Build {
       resolvers += Classpaths.typesafeReleases,
       resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies ++= Seq(
-        "org.scalatra" %% "scalatra" % ScalatraVersion,
-        "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
-        "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
-        "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
-        "org.eclipse.jetty" % "jetty-webapp" % "9.2.10.v20150310" % "container",
-        "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided"
+        "org.scalatra"                %% "scalatra" % ScalatraVersion,
+        "org.scalatra"                %% "scalatra-scalate"      % ScalatraVersion,
+        "org.scalatra"                %% "scalatra-scalate"      % ScalatraVersion,
+        "org.scalatra"                %% "scalatra-atmosphere"   % ScalatraVersion,
+
+        "ch.qos.logback"               % "logback-classic"       % "1.1.2" % "runtime",
+
+        "org.eclipse.jetty"            %  "jetty-plus"           % jettyVersion % "container",
+        "org.eclipse.jetty.websocket"  %  "websocket-server"     % jettyVersion % "container",
+        "org.eclipse.jetty"            %  "jetty-webapp"         % jettyVersion % "container",
+        "javax.servlet"                %  "javax.servlet-api"    % "3.1.0" % "provided"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(
