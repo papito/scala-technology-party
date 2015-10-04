@@ -1,4 +1,4 @@
-import com.whyisitdoingthat.app._
+import com.whyisitdoingthat.controllers.IndexController
 import org.scalatra._
 import javax.servlet.ServletContext
 

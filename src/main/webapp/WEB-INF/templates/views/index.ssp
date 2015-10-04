@@ -1,0 +1,6 @@
+<script>
+    $(document).ready(function() {
+    var indexViewModel = new IndexViewModel();
+    ko.applyBindings(indexViewModel);
+    });
+</script>
