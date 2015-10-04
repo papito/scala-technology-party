@@ -1,6 +1,48 @@
-<script>
-    $(document).ready(function() {
-    var indexViewModel = new IndexViewModel();
-    ko.applyBindings(indexViewModel);
-    });
-</script>
+<% import com.whyisitdoingthat.{Const => C} %>
+
+<html>
+    <head>
+        <title>${C.APP_NAME}</title>
+
+        <link rel="stylesheet" type="text/css" href="/static/css/app.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/lib/bootstrap.min.css">
+
+        <script src="/static/js/lib/jquery-2.1.1.min.js"></script>
+        <script src="/static/js/lib/bootstrap.js"></script>
+        <script src="/static/js/lib/knockout-3.2.0.js"></script>
+        <script src="/static/js/lib/Base.js"></script>
+        <script src="/static/js/app/core.js"></script>
+        <script src="/static/js/app/index.js"></script>
+    </head>
+    <body>
+        <div class="navbar navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button"
+                            class="navbar-toggle collapsed"
+                            data-toggle="collapse"
+                            data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">${C.APP_NAME}</a>
+                </div>
+            </div>
+        </div>
+
+        <section>
+            <div id="content" class="container-fluid">
+            </div>
+        </section>
+
+        <script>
+            $(document).ready(function() {
+            var indexViewModel = new IndexViewModel();
+            ko.applyBindings(indexViewModel);
+            });
+        </script>
+    </body>
+</html>
+

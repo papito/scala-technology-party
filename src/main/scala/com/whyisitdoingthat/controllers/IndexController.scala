@@ -7,6 +7,6 @@ class IndexController extends ScalaTechnologyPartyStack {
   }
 
   get("/") {
-    ssp("index")
+    ssp("index", "layout" -> "")
   }
 }
