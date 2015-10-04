@@ -1,8 +1,6 @@
-<% import com.whyisitdoingthat.{Const => C} %>
-
 <html>
     <head>
-        <title>${C.APP_NAME}</title>
+        <title>${com.whyisitdoingthat.Const.APP_NAME}</title>
 
         <link rel="stylesheet" type="text/css" href="/static/css/app.css">
         <link rel="stylesheet" type="text/css" href="/static/css/lib/bootstrap.min.css">
@@ -28,7 +26,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">${C.APP_NAME}</a>
+                    <a class="navbar-brand" href="/">${com.whyisitdoingthat.Const.APP_NAME}</a>
                 </div>
             </div>
         </div>
