@@ -1,47 +1,80 @@
 <html>
-    <head>
-        <title>${com.whyisitdoingthat.Const.APP_NAME}</title>
+<head>
+  <title>${com.whyisitdoingthat.Const.APP_NAME}</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/lib/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/app.css">
+  <script src="/static/js/lib/jquery-2.1.1.min.js"></script>
+  <script src="/static/js/lib/bootstrap.js"></script>
+  <script src="/static/js/lib/knockout-3.2.0.js"></script>
+  <script src="/static/js/lib/jquery-atmosphere.js" xmlns="http://www.w3.org/1999/html"></script>
+  <script src="/static/js/lib/Base.js"></script>
+  <script src="/static/js/app/core.js"></script>
+  <script src="/static/js/app/index.js"></script>
+</head>
+<body>
+  <div class="navbar navbar-inverse" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button"
+        class="navbar-toggle collapsed"
+        data-toggle="collapse"
+        data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">${com.whyisitdoingthat.Const.APP_NAME}</a>
+    </div>
+  </div>
+  </div>
 
-        <link rel="stylesheet" type="text/css" href="/static/css/app.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/lib/bootstrap.min.css">
-
-        <script src="/static/js/lib/jquery-2.1.1.min.js"></script>
-        <script src="/static/js/lib/bootstrap.js"></script>
-        <script src="/static/js/lib/knockout-3.2.0.js"></script>
-        <script src="/static/js/lib/jquery-atmosphere.js" xmlns="http://www.w3.org/1999/html"></script>
-        <script src="/static/js/lib/Base.js"></script>
-        <script src="/static/js/app/core.js"></script>
-        <script src="/static/js/app/index.js"></script>
-    </head>
-    <body>
-        <div class="navbar navbar-inverse" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button"
-                            class="navbar-toggle collapsed"
-                            data-toggle="collapse"
-                            data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="/">${com.whyisitdoingthat.Const.APP_NAME}</a>
-                </div>
-            </div>
+  <div id="content" class="container-fluid">
+    <div id="trello">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>"Trello"</h2>
         </div>
+      </div>
 
-        <section>
-            <div id="content" class="container-fluid">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="well t-list">
+            <div class="list-title">
+              <h5>TODO</h5>
             </div>
-        </section>
+            <div id="trelloTodo">
+            </div>
+            <div class="list-add">
+              <button data-bind="click: function() {addNewCard('trelloTodo')}">Add Card</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="well t-list">
+            <div class="list-title">
+              <h5>DOING...</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="well t-list">
+            <div class="list-title">
+              <h5>DONE!</h5>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <script>
-            $(document).ready(function() {
-            var indexViewModel = new IndexViewModel();
-            ko.applyBindings(indexViewModel);
-            });
-        </script>
-    </body>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+    var indexViewModel = new IndexViewModel();
+    ko.applyBindings(indexViewModel);
+    });
+  </script>
+</body>
 </html>
 

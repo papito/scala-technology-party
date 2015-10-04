@@ -1,0 +1,27 @@
+/*
+    GENERAL
+*/
+#content {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+/*
+    "TRELLO"
+*/
+
+#trello .t-list {
+    padding: 1em;
+}
+
+#trello .list-title {
+    border-bottom: 2px solid darkgray;
+}
+
+#trello .list-add {
+    margin-top: 1em;
+}
