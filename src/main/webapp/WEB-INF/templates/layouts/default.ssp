@@ -6,7 +6,7 @@
     <head>
         <title>${C.APP_NAME}</title>
 
-        <link rel="stylesheet" type="text/css" href="/static/css/app.css>">
+        <link rel="stylesheet" type="text/css" href="/static/css/app.css">
         <link rel="stylesheet" type="text/css" href="/static/css/lib/bootstrap.min.css">
 
         <script src="/static/js/lib/jquery-2.1.1.min.js"></script>
@@ -38,6 +38,5 @@
             </div>
         </section>
 
-        <footer>footer</footer>
     </body>
 </html>
