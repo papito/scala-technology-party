@@ -20,6 +20,7 @@
 
 #trello .list-title {
     border-bottom: 2px solid darkgray;
+    margin-bottom: 1em;
 }
 
 #trello .list-add {
