@@ -10,6 +10,7 @@ object ScalaTechnologyPartyBuild extends Build {
   val Name = "Scala Technology Party"
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.11.7"
+  val json4sversion = "3.3.0.RC1"
   val ScalatraVersion = "2.4.0-RC2-2"
   val jettyVersion = "9.1.3.v20140225"
 
@@ -28,6 +29,7 @@ object ScalaTechnologyPartyBuild extends Build {
         "org.scalatra"                %% "scalatra-scalate"      % ScalatraVersion,
         "org.scalatra"                %% "scalatra-scalate"      % ScalatraVersion,
         "org.scalatra"                %% "scalatra-atmosphere"   % ScalatraVersion,
+        "org.json4s"                  %% "json4s-jackson"        % json4sversion,
 
         "ch.qos.logback"               % "logback-classic"       % "1.1.2" % "runtime",
 
