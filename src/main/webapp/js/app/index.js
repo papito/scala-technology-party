@@ -8,20 +8,18 @@ ProtocolHandler = Base.extend({
 
     this.request = {
       url: "/ws",
-      contentType: "text/plain",
+      contentType: "application/json",
       logLevel: 'debug',
       transport: 'websocket',
       fallbackTransport: 'long-polling'
     };
 
-    this.uuid = null;
+    this.uid = null;
 
     this.request.onOpen = function(response) {
       console.log('Atmosphere connected using ' + response.transport);
-      console.log("What is our Atmosphere UUID?");
-      self.sendCommand("uuid", function() {
-        self.subSocket.push(cmd);
-      })
+      console.log("What is our Atmosphere UID?");
+      self.sendCommand({'action': 'getUID'})
     };
 
     this.socket = socket;
@@ -56,16 +54,16 @@ TrelloProtocolHandler = ProtocolHandler.extend({
         console.log('This doesn\'t look like a valid JSON, bro: ', message);
       }
 
-      if (json.uuid) {
-        console.log("UUID: " + json.uuid);
-        self.uuid = json.uuid;
+      if (json.uid) {
+        console.log("UID: " + json.uid);
+        self.uid = json.uid;
       }
 
       if (json.card) {
         var card = json.card;
         $('#' + card.listId).append(
             '<div id="card' +  card.no + '"class="card well">' +
-            card.text + ' from user ' + json.uuid + '</div>'
+            card.text + ' from user ' + json.uid + '</div>'
         );
       }
     };
@@ -101,7 +99,7 @@ IndexViewModel = BaseViewModel.extend({
     console.log('Initializing index view model');
 
     this.totalTrelloCards = ko.observable(0);
-    this.uuid = null;
+    this.uid = null;
 
     console.log('Initialized Atmosphere');
     var socket = $.atmosphere;

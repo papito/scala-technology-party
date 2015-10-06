@@ -1,6 +1,5 @@
 package com.whyisitdoingthat.controllers
 
-import com.fasterxml.jackson.annotation.JsonValue
 import org.json4s.JsonAST.{JNull, JField, JString, JObject}
 import org.json4s.{JsonDSL, JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
@@ -19,7 +18,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
 
   atmosphere("/") {
     new AtmosphereClient {
-      private def uuidJson: JObject = "uuid" -> uuid
+      private def uuidJson: JObject = "uid" -> uuid
 
       private def writeToYou(jsonMessage: JValue): Unit = {
         log.info(s"WS (you) -> $jsonMessage")
@@ -33,7 +32,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
       }
 
       override def receive: AtmoReceive = {
-        case TextMessage("uuid") => {
+        case message @ JsonMessage(JObject(JField("action", JString("getUID")) :: fields)) => {
           log.info(s"WS <- uuid")
           this.writeToYou(uuidJson)
         }
