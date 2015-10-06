@@ -1,6 +1,6 @@
 package com.whyisitdoingthat.controllers
 
-import org.json4s.{DefaultFormats, Formats}
+import org.json4s.{JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
 import org.scalatra._
 import org.scalatra.json.{JacksonJsonSupport, JValueResult}
@@ -16,11 +16,15 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
 
   atmosphere("/") {
     new AtmosphereClient {
+
+      private def write(jsonMessage: JValue): Unit = {
+        log.info(s"WS <- $jsonMessage")
+        this.send(jsonMessage)
+      }
       def receive: AtmoReceive = {
-        case TextMessage(data: String) => {
-          log.info(s"WS -> $data")
-          log.info(s"WS <- $data")
-          this.send(data)
+        case JsonMessage(json: JValue) => {
+          log.info(s"WS -> $json")
+          this.write(json)
         }
 
         case Connected =>
