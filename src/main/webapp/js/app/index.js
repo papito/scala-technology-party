@@ -65,7 +65,7 @@ TrelloProtocolHandler = ProtocolHandler.extend({
         var card = json.card;
         $('#' + card.listId).append(
             '<div id="card' +  card.no + '"class="card well">' +
-            card.text + 'from user ' + card.uuid + '</div>'
+            card.text + ' from user ' + json.uuid + '</div>'
         );
       }
     };

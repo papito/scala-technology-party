@@ -1,6 +1,7 @@
 package com.whyisitdoingthat.controllers
 
-import org.json4s.JsonAST.{JField, JString, JObject}
+import com.fasterxml.jackson.annotation.JsonValue
+import org.json4s.JsonAST.{JNull, JField, JString, JObject}
 import org.json4s.{JsonDSL, JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
 import org.scalatra._
@@ -18,7 +19,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
 
   atmosphere("/") {
     new AtmosphereClient {
-      private def uuidJson: JValue = compact(render("uuid" -> uuid))
+      private def uuidJson: JObject = "uuid" -> uuid
 
       private def writeToYou(jsonMessage: JValue): Unit = {
         log.info(s"WS (you) -> $jsonMessage")
@@ -28,8 +29,6 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
       private def writeToAll(jsonMessage: JValue): Unit = {
         val jsonOut = jsonMessage merge uuidJson
         log.info(s"WS (ALL) -> $jsonMessage")
-        log.info(s"WS (ALL) -> $uuidJson")
-        log.info(s"WS (ALL) -> $jsonOut")
         this.broadcast(jsonOut)
       }
 
@@ -39,9 +38,17 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
           this.writeToYou(uuidJson)
         }
 
-        case j @ JsonMessage(JObject(JField("action", JString("addCard")) :: fields)) => {
-          log.info(s"WS <- ${j.content}")
-          this.writeToAll(j.content)
+        // add "trello" card
+        case message @ JsonMessage(JObject(JField("action", JString("addCard")) :: fields)) => {
+          val json: JValue = message.content
+          log.info(s"WS <- $json")
+
+          val cardJson: JValue = json findField {
+            case JField("card", _) => true
+            case _ => false
+          }
+
+          this.writeToAll(cardJson)
         }
 
         case Connected =>
