@@ -1,11 +1,12 @@
 package com.whyisitdoingthat.controllers
 
-import org.json4s.{JValue, DefaultFormats, Formats}
+import org.json4s.{JsonDSL, JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
 import org.scalatra._
 import org.scalatra.json.{JacksonJsonSupport, JValueResult}
 import org.slf4j.LoggerFactory
 import org.scalatra.atmosphere._
+import JsonDSL._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,12 +19,18 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
     new AtmosphereClient {
 
       private def write(jsonMessage: JValue): Unit = {
-        log.info(s"WS <- $jsonMessage")
+        log.info(s"WS -> $jsonMessage")
         this.send(jsonMessage)
       }
-      def receive: AtmoReceive = {
+
+      override def receive: AtmoReceive = {
+        case TextMessage("uuid") => {
+          log.info(s"WS <- uuid")
+          this.write(compact(render("uuid" -> uuid)))
+        }
+
         case JsonMessage(json: JValue) => {
-          log.info(s"WS -> $json")
+          log.info(s"WS <- $json")
           this.write(json)
         }
 
@@ -36,7 +43,6 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         case Error(Some(error)) =>
           // FIXME - what is the difference with the hanler "error" handler?
           error.printStackTrace()
-
       }
     }
   }

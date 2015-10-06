@@ -1,18 +1,76 @@
 ProtocolHandler = Base.extend({
-  constructor : function(subSocket) {
+  constructor : function(socket) {
+    var self = this;
     this.base();
-    this.subSocket = subSocket;
+
+    this.request = {
+      url: "/ws",
+      contentType: "text/plain",
+      logLevel: 'debug',
+      transport: 'websocket',
+      fallbackTransport: 'long-polling'
+    };
+
+    this.uuid = null;
+
+    this.request.onOpen = function(response) {
+      console.log('Atmosphere connected using ' + response.transport);
+      console.log("What is our Atmosphere UUID?");
+      self.sendCommand("uuid", function() {
+        self.subSocket.push(cmd);
+      })
+    };
+
+    this.socket = socket;
+    this.subSocket = null;
   },
 
-  sendCommand: function(cmd, handler) {
-    console.log('ws < ' + cmd);
+  sendCommand: function(cmd) {
+    console.log('ws <- ' + cmd);
     this.subSocket.push(cmd);
   }
 });
 
+
 TrelloProtocolHandler = ProtocolHandler.extend({
-  constructor : function(subSocket) {
-    this.base(subSocket);
+  constructor : function(socket) {
+    this.base(socket);
+
+    var self = this;
+
+    this.request.onReconnect = function(rq, rs) {
+      self.socket.info("Reconnecting");
+    };
+
+    this.request.onMessage = function(rs) {
+      console.log(rs);
+      var message = rs.responseBody;
+      console.log('ws -> ' + message);
+
+      try {
+        var json = jQuery.parseJSON(message);
+      } catch (e) {
+        console.log('This doesn\'t look like a valid JSON object: ', message);
+      }
+
+      if (json.uuid) {
+        console.log("UUID: " + json.uuid);
+        self.uuid = json.uuid;
+      }
+    };
+
+    this.request.onClose = function(rs) {
+      console.log("Closing connection")
+    };
+
+    this.request.onError = function(rs) {
+      //FIXME: banner error
+      console.log("Socket Error");
+      console.log(rs);
+    };
+
+    this.subSocket = this.socket.subscribe(this.request);
+
   },
 
   addCard: function(card) {
@@ -29,51 +87,13 @@ IndexViewModel = BaseViewModel.extend({
     console.log('Initializing index view model');
 
     this.totalTrelloCards = ko.observable(0);
+    this.uuid = null;
 
-    this.socket = $.atmosphere;
-    this.socketReady = false;
-
-    this.request = {
-      url: "/ws",
-      contentType: "text/plain",
-      logLevel: 'debug',
-      transport: 'websocket',
-      fallbackTransport: 'long-polling'
-    };
     console.log('Initialized Atmosphere');
+    var socket = $.atmosphere;
 
-    this.request.onOpen = function(response) {
-      console.log('Atmosphere connected using ' + response.transport);
-      self.socketReady = true;
-    };
-
-    this.request.onReconnect = function(rq, rs) {
-      self.socket.info("Reconnecting");
-    };
-
-    this.request.onMessage = function(rs) {
-      console.log(rs);
-      var message = rs.responseBody;
-      console.log('ws > ' + message);
-
-      try {
-        var json = jQuery.parseJSON(message);
-      } catch (e) {
-        console.log('This doesn\'t look like a valid JSON object: ', message);
-      }
-    };
-
-    this.request.onClose = function(rs) {
-      console.log("Closing connection")
-    };
-
-    this.request.onError = function(rs) {
-      //FIXME: banner error
-      console.log("Socket Error");
-      console.log(rs);
-    };
-
-    this.subSocket = self.socket.subscribe(self.request);
+    this.protocol =new TrelloProtocolHandler(socket);
+    console.log('"Trello" protocol handler attached');
   },
 
   /*
@@ -86,9 +106,9 @@ IndexViewModel = BaseViewModel.extend({
     var card = {};
     card.no = this.totalTrelloCards();
     card.text = 'A card with some text #' +  card.no;
+    card.listId = listId;
     $('#' + listId).append('<div id="card' +  card.no + '"class="card well">' +  card.text + '</div>');
 
-    var protocol = new TrelloProtocolHandler(this.subSocket);
-    protocol.addCard(card);
+    this.protocol.addCard(card);
   }
 });
