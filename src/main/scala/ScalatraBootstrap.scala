@@ -1,11 +1,11 @@
-import com.whyisitdoingthat.controllers.{FancyAsyncController, StaticAssetController}
+import com.whyisitdoingthat.controllers.{WebsocketController, StaticAssetController}
 import org.scalatra._
 import javax.servlet.ServletContext
 
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext) {
     context.mount(new StaticAssetController, "/")
-    context.mount(new FancyAsyncController, "/ws")
+    context.mount(new WebsocketController, "/ws")
     context.mount(new StaticAssetController, "/static/*")
   }
 }

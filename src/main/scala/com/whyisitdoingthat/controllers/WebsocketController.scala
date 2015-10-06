@@ -9,7 +9,7 @@ import org.scalatra.atmosphere._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FancyAsyncController extends ScalatraServlet with JValueResult with JacksonJsonSupport with SessionSupport with AtmosphereSupport   {
+class WebsocketController extends ScalatraServlet with JValueResult with JacksonJsonSupport with SessionSupport with AtmosphereSupport   {
   private final val log = LoggerFactory.getLogger(getClass)
 
   implicit protected val jsonFormats: Formats = DefaultFormats
