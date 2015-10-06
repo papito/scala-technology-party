@@ -1,3 +1,6 @@
+/*
+  Base protocol handler. Gets user UUID when subsocket is ready
+ */
 ProtocolHandler = Base.extend({
   constructor : function(socket) {
     var self = this;
@@ -25,17 +28,17 @@ ProtocolHandler = Base.extend({
     this.subSocket = null;
   },
 
-  sendCommand: function(cmd) {
-    console.log('ws <- ' + cmd);
-    this.subSocket.push(cmd);
+  sendCommand: function(message) {
+    var json = JSON.stringify(message);
+    console.log('ws <- ' + json);
+    this.subSocket.push(json);
   }
 });
-
+//-----------------------------------------------------------------------------
 
 TrelloProtocolHandler = ProtocolHandler.extend({
   constructor : function(socket) {
     this.base(socket);
-
     var self = this;
 
     this.request.onReconnect = function(rq, rs) {
@@ -50,12 +53,20 @@ TrelloProtocolHandler = ProtocolHandler.extend({
       try {
         var json = jQuery.parseJSON(message);
       } catch (e) {
-        console.log('This doesn\'t look like a valid JSON object: ', message);
+        console.log('This doesn\'t look like a valid JSON, bro: ', message);
       }
 
       if (json.uuid) {
         console.log("UUID: " + json.uuid);
         self.uuid = json.uuid;
+      }
+
+      if (json.card) {
+        var card = json.card;
+        $('#' + card.listId).append(
+            '<div id="card' +  card.no + '"class="card well">' +
+            card.text + 'from user ' + card.uuid + '</div>'
+        );
       }
     };
 
@@ -74,11 +85,14 @@ TrelloProtocolHandler = ProtocolHandler.extend({
   },
 
   addCard: function(card) {
-    this.sendCommand(JSON.stringify(card));
+    var message = {};
+    message.action = "addCard";
+    message.card = card;
+    this.sendCommand(message);
   }
 });
-
 //-----------------------------------------------------------------------------
+
 IndexViewModel = BaseViewModel.extend({
   constructor : function() {
     "use strict";
@@ -108,7 +122,6 @@ IndexViewModel = BaseViewModel.extend({
     card.text = 'A card with some text #' +  card.no;
     card.listId = listId;
     $('#' + listId).append('<div id="card' +  card.no + '"class="card well">' +  card.text + '</div>');
-
     this.protocol.addCard(card);
   }
 });

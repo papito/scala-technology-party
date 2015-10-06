@@ -1,5 +1,6 @@
 package com.whyisitdoingthat.controllers
 
+import org.json4s.JsonAST.{JField, JString, JObject}
 import org.json4s.{JsonDSL, JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
 import org.scalatra._
@@ -17,21 +18,30 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
 
   atmosphere("/") {
     new AtmosphereClient {
+      private def uuidJson: JValue = compact(render("uuid" -> uuid))
 
-      private def write(jsonMessage: JValue): Unit = {
-        log.info(s"WS -> $jsonMessage")
+      private def writeToYou(jsonMessage: JValue): Unit = {
+        log.info(s"WS (you) -> $jsonMessage")
         this.send(jsonMessage)
+      }
+
+      private def writeToAll(jsonMessage: JValue): Unit = {
+        val jsonOut = jsonMessage merge uuidJson
+        log.info(s"WS (ALL) -> $jsonMessage")
+        log.info(s"WS (ALL) -> $uuidJson")
+        log.info(s"WS (ALL) -> $jsonOut")
+        this.broadcast(jsonOut)
       }
 
       override def receive: AtmoReceive = {
         case TextMessage("uuid") => {
           log.info(s"WS <- uuid")
-          this.write(compact(render("uuid" -> uuid)))
+          this.writeToYou(uuidJson)
         }
 
-        case JsonMessage(json: JValue) => {
-          log.info(s"WS <- $json")
-          this.write(json)
+        case j @ JsonMessage(JObject(JField("action", JString("addCard")) :: fields)) => {
+          log.info(s"WS <- ${j.content}")
+          this.writeToAll(j.content)
         }
 
         case Connected =>
