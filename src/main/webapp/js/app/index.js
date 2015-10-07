@@ -8,8 +8,8 @@ ProtocolHandler = Base.extend({
 
     this.request = {
       url: "/ws",
-      contentType: "application/json",
       logLevel: 'debug',
+      contentType : "application/json",
       transport: 'websocket',
       fallbackTransport: 'long-polling'
     };
@@ -24,6 +24,26 @@ ProtocolHandler = Base.extend({
 
     this.socket = socket;
     this.subSocket = null;
+  },
+
+  onMessage: function(rs) {
+    var self = this;
+
+    console.log(rs);
+    var message = rs.responseBody;
+    console.log('ws -> ' + message);
+
+    try {
+      var json = jQuery.parseJSON(message);
+    } catch (e) {
+      console.log('This doesn\'t look like a valid JSON, bro: ', message);
+    }
+
+    if (json.uid) {
+      self.uid = json.uid;
+    }
+
+    return json;
   },
 
   sendCommand: function(message) {
@@ -44,26 +64,13 @@ TrelloProtocolHandler = ProtocolHandler.extend({
     };
 
     this.request.onMessage = function(rs) {
-      console.log(rs);
-      var message = rs.responseBody;
-      console.log('ws -> ' + message);
+      var json = self.onMessage(rs);
 
-      try {
-        var json = jQuery.parseJSON(message);
-      } catch (e) {
-        console.log('This doesn\'t look like a valid JSON, bro: ', message);
-      }
-
-      if (json.uid) {
-        console.log("UID: " + json.uid);
-        self.uid = json.uid;
-      }
-
-      if (json.card) {
+      if (json.card && json.card.uid != self.uid) {
         var card = json.card;
         $('#' + card.listId).append(
             '<div id="card' +  card.no + '"class="card well">' +
-            card.text + ' from user ' + json.uid + '</div>'
+            card.text + ' from user ' + json.card.uid + '</div>'
         );
       }
     };
@@ -83,9 +90,12 @@ TrelloProtocolHandler = ProtocolHandler.extend({
   },
 
   addCard: function(card) {
-    var message = {};
-    message.action = "addCard";
-    message.card = card;
+    card.uid = this.uid;
+
+    var message = {
+      'action': "addCard",
+      'card': card
+    };
     this.sendCommand(message);
   }
 });
@@ -115,10 +125,11 @@ IndexViewModel = BaseViewModel.extend({
   addNewCard: function(listId) {
     this.totalTrelloCards(this.totalTrelloCards() + 1);
 
-    var card = {};
-    card.no = this.totalTrelloCards();
-    card.text = 'A card with some text #' +  card.no;
-    card.listId = listId;
+    var card = {
+      no: this.totalTrelloCards(),
+      text: 'A card with some text #' + this.totalTrelloCards(),
+      listId: listId
+    };
     $('#' + listId).append('<div id="card' +  card.no + '"class="card well">' +  card.text + '</div>');
     this.protocol.addCard(card);
   }

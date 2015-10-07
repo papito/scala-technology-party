@@ -25,8 +25,8 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         this.send(jsonMessage)
       }
 
-      private def writeToAll(jsonMessage: JValue): Unit = {
-        val jsonOut = jsonMessage merge uuidJson
+      private def writeToRest(jsonMessage: JValue): Unit = {
+        val jsonOut = jsonMessage
         log.info(s"WS (ALL) -> $jsonMessage")
         this.broadcast(jsonOut)
       }
@@ -47,7 +47,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
             case _ => false
           }
 
-          this.writeToAll(cardJson)
+          this.writeToRest(cardJson)
         }
 
         case Connected =>
