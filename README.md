@@ -2,6 +2,9 @@
 
 #### ...with Scala, Scalatra, and Atmosphere Websockets! Special appearance by comedian Long Running Process. Music by DJ Drag'n'Drop. Warm up by a Trello Impersonator! Set design by Bootstrap. Catering by KnockoutJS.
 
+## Status
+First pass at a simple websocket - adding one "Trello" card shows up in other clients in real-time.
+
 ## Build & Run ##
 
 ```sh
