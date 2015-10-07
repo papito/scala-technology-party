@@ -16,6 +16,8 @@ ProtocolHandler = Base.extend({
 
     this.uid = null;
 
+    //TODO: handle protocol failure
+
     this.request.onOpen = function(response) {
       console.log('Atmosphere connected using ' + response.transport);
       console.log("What is our Atmosphere UID?");
