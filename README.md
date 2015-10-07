@@ -10,7 +10,7 @@ First pass at a simple websocket - adding one "Trello" card shows up in other cl
 
 ## Build & Run ##
 
-*All* you need is Java installed.
+**All** you need is Java installed.
 
 ```sh
 $ cd scala-technology-party
