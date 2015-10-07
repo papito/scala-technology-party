@@ -21,19 +21,24 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
       private def uuidJson: JObject = "uid" -> uuid
 
       private def writeToYou(jsonMessage: JValue): Unit = {
-        log.info(s"WS (you) -> $jsonMessage")
+        log.info(s"YOU -> $jsonMessage")
         this.send(jsonMessage)
       }
 
+      private def writeToAll(jsonMessage: JValue): Unit = {
+        log.info(s"ALL -> $jsonMessage")
+        this.broadcast(jsonMessage, Everyone)
+      }
+
       private def writeToRest(jsonMessage: JValue): Unit = {
-        val jsonOut = jsonMessage
-        log.info(s"WS (ALL) -> $jsonMessage")
-        this.broadcast(jsonOut)
+        log.info(s"REST -> $jsonMessage")
+        this.broadcast(jsonMessage)
       }
 
       override def receive: AtmoReceive = {
         case message @ JsonMessage(JObject(JField("action", JString("getUID")) :: fields)) => {
-          log.info(s"WS <- uuid")
+          val json: JValue = message.content
+          log.info(s"WS <- $json")
           this.writeToYou(uuidJson)
         }
 
@@ -47,7 +52,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
             case _ => false
           }
 
-          this.writeToRest(cardJson)
+          this.writeToAll(cardJson)
         }
 
         case Connected =>
