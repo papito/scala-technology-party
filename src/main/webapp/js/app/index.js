@@ -10,6 +10,7 @@ ProtocolHandler = Base.extend({
       url: "/ws",
       logLevel: 'debug',
       contentType : "application/json",
+      closeAsync: true,
       transport: 'websocket',
       fallbackTransport: 'long-polling'
     };
