@@ -1,4 +1,4 @@
-# Scala Technology Party #
+# Scala Sandbox #
 
 #### ...with Scala, Scalatra, and Atmosphere Websockets! Special appearance by comedian Long Running Process. Music by DJ Drag'n'Drop. Warm up by a Trello Impersonator! Set design by Bootstrap. Catering by KnockoutJS.
 
