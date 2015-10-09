@@ -2,6 +2,6 @@ package com.whyisitdoingthat.controllers
 
 import org.scalatra._
 
-trait ScalaTechnologyPartyStack extends ScalatraServlet {
+trait ScalatraSandbox extends ScalatraServlet {
 
 }

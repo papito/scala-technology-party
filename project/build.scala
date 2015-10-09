@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 import org.scalatra.sbt._
 
-object ScalaTechnologyPartyBuild extends Build {
+object ScalatraSanbox extends Build {
   val Organization = "com.whyisitdoingthat"
   val Name = "Scalatra Sandbox"
   val Version = "0.1.0-SNAPSHOT"
@@ -12,7 +12,7 @@ object ScalaTechnologyPartyBuild extends Build {
   val jettyVersion = "9.1.3.v20140225"
 
   lazy val project = Project (
-    "scala-technology-party",
+    "scalatra-sandbox",
     file("."),
     settings = ScalatraPlugin.scalatraSettings ++ Seq(
       organization := Organization,

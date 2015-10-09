@@ -2,7 +2,7 @@ package com.whyisitdoingthat.controllers
 
 import java.io.File
 
-class StaticAssetController extends ScalaTechnologyPartyStack {
+class StaticAssetController extends ScalatraSandbox {
   /*
     Special static handler for development, to force live update of
     CSS and JS files from the version-controlled directory

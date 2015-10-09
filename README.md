@@ -13,7 +13,7 @@ First pass at a simple websocket - adding one "Trello" card shows up in other cl
 **All** you need is Java installed.
 
 ```sh
-$ cd scala-technology-party
+$ cd scalatra-sandbox
 $ ./sbt
 > container:start
 > browse
