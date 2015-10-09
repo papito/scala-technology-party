@@ -4,7 +4,7 @@ import org.scalatra.sbt._
 
 object ScalaTechnologyPartyBuild extends Build {
   val Organization = "com.whyisitdoingthat"
-  val Name = "Scala Technology Party"
+  val Name = "Scala Sandbox"
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.11.7"
   val json4sversion = "3.3.0.RC1"
