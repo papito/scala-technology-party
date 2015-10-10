@@ -10,6 +10,7 @@ import org.scalatra.atmosphere._
 import JsonDSL._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.io.Source
 
 class WebsocketController extends ScalatraServlet with JValueResult with JacksonJsonSupport with SessionSupport with AtmosphereSupport   {
   private final val log = LoggerFactory.getLogger(getClass)
@@ -59,6 +60,10 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         case message @ JsonMessage(JObject(JField("action", JString("startFutures")) :: fields)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
+
+          val r = getClass.getResource("/future_file_shock/1.txt")
+          val content: String = Source.fromURL(r).mkString
+          log.info(content)
 
           this.writeToYou("futuresStarted" -> true)
         }
