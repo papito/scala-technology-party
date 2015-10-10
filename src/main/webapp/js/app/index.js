@@ -10,9 +10,12 @@ if (!window.console) {
   Base protocol handler. Gets user UUID when subsocket is ready
  */
 ProtocolHandler = Base.extend({
-  constructor : function(socket) {
+  constructor : function(socket, view) {
     var self = this;
+    this.view = view;
+
     this.base();
+
 
     this.request = {
       url: "/ws",
@@ -66,8 +69,8 @@ ProtocolHandler = Base.extend({
 //-----------------------------------------------------------------------------
 
 TrelloProtocolHandler = ProtocolHandler.extend({
-  constructor : function(socket) {
-    this.base(socket);
+  constructor : function(socket, view) {
+    this.base(socket, view);
     var self = this;
 
     this.request.onReconnect = function(rq, rs) {
@@ -83,6 +86,10 @@ TrelloProtocolHandler = ProtocolHandler.extend({
             '<div id="card' +  card.no + '"class="card well">' +
             card.text + ' from user ' + json.card.uid + '</div>'
         );
+      }
+
+      if (json.futuresStarted != null) {
+        self.view.futuresStarted(json.futuresStarted);
       }
     };
 
@@ -108,7 +115,22 @@ TrelloProtocolHandler = ProtocolHandler.extend({
       'card': card
     };
     this.sendCommand(message);
+  },
+
+  startFutures: function() {
+    var message = {
+      'action': "startFutures"
+    };
+    this.sendCommand(message);
+  },
+
+  stopFutures: function() {
+    var message = {
+      'action': "stopFutures"
+    };
+    this.sendCommand(message);
   }
+
 });
 //-----------------------------------------------------------------------------
 
@@ -119,13 +141,18 @@ IndexViewModel = Base.extend({
     this.base();
     console.log('Initializing index view model');
 
-    this.totalTrelloCards = ko.observable(0);
     this.uid = null;
+
+    // "trello"
+    this.totalTrelloCards = ko.observable(0);
+
+    // futures
+    this.futuresStarted = ko.observable(false);
 
     console.log('Initialized Atmosphere');
     var socket = $.atmosphere;
 
-    this.protocol =new TrelloProtocolHandler(socket);
+    this.protocol =new TrelloProtocolHandler(socket, self);
     console.log('"Trello" protocol handler attached');
   },
 
@@ -148,5 +175,12 @@ IndexViewModel = Base.extend({
 
   startFutures: function() {
     console.log("Starting futures");
+    this.protocol.startFutures();
+  },
+
+  stopFutures: function() {
+    console.log("Stopping futures");
+    this.protocol.stopFutures();
   }
+
 });

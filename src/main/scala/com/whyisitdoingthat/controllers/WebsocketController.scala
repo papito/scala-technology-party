@@ -55,6 +55,28 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
           this.writeToAll(cardJson)
         }
 
+        // futures
+        case message @ JsonMessage(JObject(JField("action", JString("startFutures")) :: fields)) => {
+          val json: JValue = message.content
+          log.info(s"WS <- $json")
+
+          this.writeToYou("futuresStarted" -> true)
+        }
+
+        case message @ JsonMessage(JObject(JField("action", JString("stopFutures")) :: fields)) => {
+          val json: JValue = message.content
+          log.info(s"WS <- $json")
+
+          this.writeToYou("futuresStarted" -> false)
+        }
+
+        // unknown
+        case message @ JsonMessage(AnyRef) => {
+          val json: JValue = message.content
+          log.info(s"WS <- $json")
+          throw new Exception("Unknown JSON command")
+        }
+
         case Connected =>
           log.info("Client connected")
 

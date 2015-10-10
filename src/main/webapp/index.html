@@ -86,7 +86,7 @@
   </div>
 
 
-  <div id="RunawayFutures">
+  <div id="runawayFutures">
     <div class="row">
       <div class="col-md-12">
         <h2>Runaway Futures</h2>
@@ -101,7 +101,8 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <button type="button" data-bind="click: startFutures" class="btn btn-primary">Start This Mess</button>
+        <button type="button" data-bind="click: startFutures, visible: !futuresStarted()" class="btn btn-primary" style="display: none">Start</button>
+        <button type="button" data-bind="click: stopFutures, visible: futuresStarted()" class="btn btn-danger" style="display: none">Stop</button>
       </div>
     </div>
   </div>

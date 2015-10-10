@@ -30,3 +30,11 @@
 #trello .list-add {
     margin-top: 1em;
 }
+
+/*
+    FUTURES
+*/
+
+#runawayFutures button {
+    display: hidden;
+}
