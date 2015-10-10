@@ -1,12 +1,10 @@
-# Scala Sandbox #
+# Scala Atmosphere Websockets Sandbox #
 
 #### ...with Scala, Scalatra, and Atmosphere Websockets! Special appearance by comedian Long Running Process. Music by DJ Drag'n'Drop. Warm up by a Trello Impersonator! Set design by Bootstrap. Catering by KnockoutJS.
 
-## Goal
-This is a little R&D project to test Atmosphere with Scalatra, as well as to reaseach resilience, best practices, and client techniques. 
-
 ## Status
-First pass at a simple websocket - adding one "Trello" card shows up in other clients in real-time.
+  * "Trello" card shows up in other clients in real-time.
+  * An example of utilizing all cores with futures to do something, and then stopping it via client.
 
 ## Build & Run ##
 
