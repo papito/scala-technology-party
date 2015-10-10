@@ -1,5 +1,7 @@
 package com.whyisitdoingthat.controllers
 
+import java.util.concurrent.Executors
+
 import org.json4s.JsonAST.{JNull, JField, JString, JObject}
 import org.json4s.{JsonDSL, JValue, DefaultFormats, Formats}
 import org.scalatra.SessionSupport
@@ -8,9 +10,11 @@ import org.scalatra.json.{JacksonJsonSupport, JValueResult}
 import org.slf4j.LoggerFactory
 import org.scalatra.atmosphere._
 import JsonDSL._
+import scala.concurrent.{ExecutionContext, Future}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.Source
+import scala.util.{Success, Failure}
 
 class WebsocketController extends ScalatraServlet with JValueResult with JacksonJsonSupport with SessionSupport with AtmosphereSupport   {
   private final val log = LoggerFactory.getLogger(getClass)
@@ -20,6 +24,8 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
   atmosphere("/") {
     new AtmosphereClient {
       private def uuidJson: JObject = "uid" -> uuid
+      private var abortFutures = false
+      private val rand = scala.util.Random
 
       private def writeToYou(jsonMessage: JValue): Unit = {
         log.info(s"YOU -> $jsonMessage")
@@ -61,9 +67,10 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
           val json: JValue = message.content
           log.info(s"WS <- $json")
 
-          val r = getClass.getResource("/future_file_shock/1.txt")
-          val content: String = Source.fromURL(r).mkString
-          log.info(content)
+          // start the party in a future, to keep this thread free to accept requests
+          Future {
+            startFuturesParty()
+          }
 
           this.writeToYou("futuresStarted" -> true)
         }
@@ -71,7 +78,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         case message @ JsonMessage(JObject(JField("action", JString("stopFutures")) :: fields)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
-
+          abortFutures = true
           this.writeToYou("futuresStarted" -> false)
         }
 
@@ -91,6 +98,47 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         case Error(Some(error)) =>
           // FIXME - what is the difference with the hanler "error" handler?
           error.printStackTrace()
+      }
+
+      private def startFuturesParty() = {
+        abortFutures = false
+
+        val numWorkers = sys.runtime.availableProcessors
+        val pool = Executors.newFixedThreadPool(numWorkers)
+        implicit val ec = ExecutionContext.fromExecutorService(pool)
+
+        /*
+            Create futures equal to the size of the thread pool.
+            Each future spawns a new one when it's done, to create
+            back-pressure
+         */
+        for (threadIdx <- 1 to numWorkers) {
+          inviteFutureToTheParty()
+        }
+      }
+
+      private def inviteFutureToTheParty(): Future[JValue] = {
+        val f: Future[JValue] = Future {
+          // some futures will open "5.txt", which does not exist, to simulate error
+          val fileNo = rand.nextInt(5) + 1
+          val r = getClass.getResource(s"/future_file_shock/$fileNo.txt")
+          val content: String = Source.fromURL(r).mkString
+          "file" -> ("name" -> s"$fileNo.txt") ~ ("content" -> content)
+        }
+
+        f onComplete {
+          case Success(json: JValue) => {
+            this.writeToYou(json)
+            if (!abortFutures) inviteFutureToTheParty()
+          }
+          case Failure(t) => {
+            log.error(t.getClass.getName)
+            this.writeToYou("file" -> ("error" -> t.getClass.getName))
+            if (!abortFutures) inviteFutureToTheParty()
+          }
+        }
+
+        f
       }
     }
   }

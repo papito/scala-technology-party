@@ -35,6 +35,6 @@
     FUTURES
 */
 
-#runawayFutures button {
-    display: hidden;
+#runawayFutures span.error {
+    color: red;
 }

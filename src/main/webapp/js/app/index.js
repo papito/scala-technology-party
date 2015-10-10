@@ -91,6 +91,16 @@ TrelloProtocolHandler = ProtocolHandler.extend({
       if (json.futuresStarted != null) {
         self.view.futuresStarted(json.futuresStarted);
       }
+
+      var file = json.file;
+      if (file) {
+        if (file.content) {
+          $('#fileContent').html("<strong>" + file.name + ":</strong> " + file.content);
+        }
+        else if (file.error) {
+          $('#fileContent').html("<span class='error'>" + file.name + ": " + file.error + "</span>");
+        }
+      }
     };
 
     this.request.onClose = function(rs) {
