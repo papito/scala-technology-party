@@ -1,3 +1,11 @@
+jQuery.support.cors = true;
+
+if (!window.console) {
+  console = {
+    log : function() {}
+  };
+}
+
 /*
   Base protocol handler. Gets user UUID when subsocket is ready
  */
@@ -104,7 +112,7 @@ TrelloProtocolHandler = ProtocolHandler.extend({
 });
 //-----------------------------------------------------------------------------
 
-IndexViewModel = BaseViewModel.extend({
+IndexViewModel = Base.extend({
   constructor : function() {
     "use strict";
     var self = this;
@@ -135,5 +143,10 @@ IndexViewModel = BaseViewModel.extend({
     };
     $('#' + listId).append('<div id="card' +  card.no + '"class="card well">' +  card.text + '</div>');
     this.protocol.addCard(card);
+  },
+  //-----------------------------------------------------------------------------
+
+  startFutures: function() {
+    console.log("Starting futures");
   }
 });

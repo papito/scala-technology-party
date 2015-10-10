@@ -7,8 +7,8 @@
   <script src="/static/js/lib/bootstrap.js"></script>
   <script src="/static/js/lib/knockout-3.2.0.js"></script>
   <script src="/static/js/lib/jquery.atmosphere.js" xmlns="http://www.w3.org/1999/html"></script>
+
   <script src="/static/js/lib/Base.js"></script>
-  <script src="/static/js/app/core.js"></script>
   <script src="/static/js/app/index.js"></script>
 </head>
 <body>
@@ -83,6 +83,27 @@
       </div>
     </div>
 
+  </div>
+
+
+  <div id="RunawayFutures">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Runaway Futures</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p class="bg-info blurb">
+          A bunch of futures do work in the background, return stuff to us, and then we try to cancel them oh boyiii
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <button type="button" data-bind="click: startFutures" class="btn btn-primary">Start This Mess</button>
+      </div>
+    </div>
   </div>
 </div>
 
