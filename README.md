@@ -2,8 +2,8 @@
 
 #### ...with Scala, Scalatra, and Atmosphere Websockets! Special appearance by comedian Long Running Process. Music by DJ Drag'n'Drop. Warm up by a Trello Impersonator! Set design by Bootstrap. Catering by KnockoutJS.
 
-## Status
-  * "Trello" card shows up in other clients in real-time.
+## What it does:
+  * A newly-added "Trello" card shows up in other clients in real-time.
   * An example of utilizing all cores with futures to do something, and then stopping it via client.
 
 ## Build & Run ##
