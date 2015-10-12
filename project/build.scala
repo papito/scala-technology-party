@@ -12,7 +12,7 @@ object ScalatraSanbox extends Build {
   val jettyVersion = "9.1.3.v20140225"
 
   lazy val project = Project (
-    "scalatra-sandbox",
+    "scalatra-websockets-sandbox",
     file("."),
     settings = ScalatraPlugin.scalatraSettings ++ Seq(
       organization := Organization,
