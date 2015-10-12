@@ -10,12 +10,11 @@ if (!window.console) {
   Base protocol handler. Gets user UUID when subsocket is ready
  */
 ProtocolHandler = Base.extend({
-  constructor : function(socket, view) {
+  constructor : function(socket, viewModel) {
     var self = this;
-    this.view = view;
+    this.viewModel = viewModel;
 
     this.base();
-
 
     this.request = {
       url: "/ws",
@@ -35,6 +34,21 @@ ProtocolHandler = Base.extend({
       console.log("What is our Atmosphere UID?");
       self.sendCommand({'action': 'getUID'})
     };
+
+    this.request.onReconnect = function(rq, rs) {
+      self.socket.info("Reconnecting");
+    };
+
+    this.request.onClose = function(rs) {
+      console.log("Closing connection")
+    };
+
+    this.request.onError = function(rs) {
+      //FIXME: banner error
+      console.log("Socket Error");
+      console.log(rs);
+    };
+
 
     this.socket = socket;
     this.subSocket = null;
@@ -69,13 +83,9 @@ ProtocolHandler = Base.extend({
 //-----------------------------------------------------------------------------
 
 TrelloProtocolHandler = ProtocolHandler.extend({
-  constructor : function(socket, view) {
-    this.base(socket, view);
+  constructor : function(socket, viewModel) {
     var self = this;
-
-    this.request.onReconnect = function(rq, rs) {
-      self.socket.info("Reconnecting");
-    };
+    this.base(socket, viewModel);
 
     this.request.onMessage = function(rs) {
       var json = self.onMessage(rs);
@@ -89,7 +99,7 @@ TrelloProtocolHandler = ProtocolHandler.extend({
       }
 
       if (json.futuresStarted != null) {
-        self.view.futuresStarted(json.futuresStarted);
+        self.viewModel.futuresStarted(json.futuresStarted);
       }
 
       var file = json.file;
@@ -101,16 +111,6 @@ TrelloProtocolHandler = ProtocolHandler.extend({
           $('#fileContent').html("<span class='error'>" + file.name + ": " + file.error + "</span>");
         }
       }
-    };
-
-    this.request.onClose = function(rs) {
-      console.log("Closing connection")
-    };
-
-    this.request.onError = function(rs) {
-      //FIXME: banner error
-      console.log("Socket Error");
-      console.log(rs);
     };
 
     this.subSocket = this.socket.subscribe(this.request);
@@ -150,8 +150,6 @@ IndexViewModel = Base.extend({
     var self = this;
     this.base();
     console.log('Initializing index view model');
-
-    this.uid = null;
 
     // "trello"
     this.totalTrelloCards = ko.observable(0);
@@ -194,3 +192,4 @@ IndexViewModel = Base.extend({
   }
 
 });
+
