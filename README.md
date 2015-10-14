@@ -1,8 +1,8 @@
 # Scala Atmosphere Websockets Sandbox #
 
-![screen 1](screen1.png)
-
 #### ...with Scala, Scalatra, and Atmosphere Websockets! Special appearance by comedian Long Running Process. Music by DJ Drag'n'Drop. Warm up by a Trello Impersonator! Set design by Bootstrap. Catering by KnockoutJS.
+
+![screen 1](screen1.png)
 
 ## What it does:
   * A newly-added "Trello" card shows up in other clients in real-time.
