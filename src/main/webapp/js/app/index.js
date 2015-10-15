@@ -160,7 +160,7 @@ IndexViewModel = Base.extend({
     console.log('Initialized Atmosphere');
     var socket = $.atmosphere;
 
-    this.protocol =new TrelloProtocolHandler(socket, self);
+    this.protocol = new TrelloProtocolHandler(socket, self);
     console.log('"Trello" protocol handler attached');
   },
 
