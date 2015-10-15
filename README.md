@@ -6,7 +6,7 @@
 
 ## What it does:
   * A newly-added "Trello" card shows up in other clients in real-time.
-  * An example of utilizing all cores with futures to do something, and then stopping it via client.
+  * An example of utilizing all cores with Scala futures to do something, and then aborting them via client.
 
 ## Build & Run ##
 
