@@ -96,7 +96,7 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
           log.info("Client disconnected ")
 
         case Error(Some(error)) =>
-          // FIXME - what is the difference with the hanler "error" handler?
+          // FIXME - what is the difference with the servlet-level "error" handler?
           error.printStackTrace()
       }
 
