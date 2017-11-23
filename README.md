@@ -10,7 +10,7 @@
 
 ## Build & Run ##
 
-**All** you need is Java installed.
+**All** you need is Java runtime and Scala installed.
 
 ```sh
 $ cd scalatra-sandbox
