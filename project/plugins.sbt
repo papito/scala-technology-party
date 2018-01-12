@@ -1,1 +1,3 @@
-addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.4.0")
+addSbtPlugin("org.scalatra.sbt" % "sbt-scalatra" % "1.0.1")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
