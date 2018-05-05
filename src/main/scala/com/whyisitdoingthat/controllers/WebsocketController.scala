@@ -2,6 +2,7 @@ package com.whyisitdoingthat.controllers
 
 import java.util.UUID
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 import org.json4s.JsonAST.{JField, JObject, JString}
 import org.json4s.{DefaultFormats, Formats, JValue, JsonDSL}
@@ -45,7 +46,7 @@ class WebsocketController
             client.send(resp)
             println(s"Sending message to self ${self.path}")
 
-            if (!stopWorkers) {
+            if (!stopWorkers.get) {
               self ! ActorMessage
             }
           }
@@ -64,7 +65,7 @@ class WebsocketController
       private val akkaRouter: ActorRef = actorSys.actorOf(
         RoundRobinPool(numWorkers).props(Props(new WorkerActor(this))), "router")
 
-      @volatile private var stopWorkers: Boolean = false
+      private var stopWorkers: AtomicBoolean = new AtomicBoolean(false)
 
       private def writeToYou(jsonMessage: JValue): Unit = {
         println(s"YOU -> $jsonMessage")
@@ -114,7 +115,7 @@ class WebsocketController
         case message @ JsonMessage(JObject(JField("action", JString("stopWorkers")) :: _)) => {
           val json: JValue = message.content
           println(s"WS <- $json")
-          stopWorkers = true
+          stopWorkers.set(true)
           this.writeToYou("workersStarted" -> false)
         }
 
@@ -138,7 +139,7 @@ class WebsocketController
       }
 
       private def startWorkersParty(): Unit = {
-        stopWorkers = false
+        stopWorkers.set(false)
 
         for (_ <- 1 to numWorkers) {
           println(s"Sending message to router")
