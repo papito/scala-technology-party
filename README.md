@@ -13,9 +13,9 @@
 **All** you need is Java runtime and Scala installed.
 
 ```sh
-$ cd scalatra-sandbox
+$ cd scalatra-websockets-sandbox
 $ ./sbt
-> container:start
+> jetty:start
 ```
 
 Open [http://localhost:8080/](http://localhost:8080/)
