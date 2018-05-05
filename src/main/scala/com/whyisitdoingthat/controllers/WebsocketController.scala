@@ -43,14 +43,14 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
       }
 
       override def receive: AtmoReceive = {
-        case message @ JsonMessage(JObject(JField("action", JString("getUID")) :: fields)) => {
+        case message @ JsonMessage(JObject(JField("action", JString("getUID")) :: _)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
           this.writeToYou(uuidJson)
         }
 
         // add "trello" card
-        case message @ JsonMessage(JObject(JField("action", JString("addCard")) :: fields)) => {
+        case message @ JsonMessage(JObject(JField("action", JString("addCard")) :: _)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
 
@@ -62,8 +62,8 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
           this.writeToAll(cardJson)
         }
 
-        // futures
-        case message @ JsonMessage(JObject(JField("action", JString("startFutures")) :: fields)) => {
+        // workers
+        case message @ JsonMessage(JObject(JField("action", JString("startWorkers")) :: _)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
 
@@ -72,14 +72,14 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
             startFuturesParty()
           }
 
-          this.writeToYou("futuresStarted" -> true)
+          this.writeToYou("workersStarted" -> true)
         }
 
-        case message @ JsonMessage(JObject(JField("action", JString("stopFutures")) :: fields)) => {
+        case message @ JsonMessage(JObject(JField("action", JString("stopWorkers")) :: _)) => {
           val json: JValue = message.content
           log.info(s"WS <- $json")
           abortFutures = true
-          this.writeToYou("futuresStarted" -> false)
+          this.writeToYou("workersStarted" -> false)
         }
 
         // unknown
@@ -92,49 +92,43 @@ class WebsocketController extends ScalatraServlet with JValueResult with Jackson
         case Connected =>
           log.info("Client connected")
 
-        case Disconnected(disconnector, Some(error)) =>
+        case Disconnected(_, Some(_)) =>
           log.info("Client disconnected ")
 
         case Error(Some(error)) =>
-          // FIXME - what is the difference with the servlet-level "error" handler?
           error.printStackTrace()
       }
 
-      private def startFuturesParty() = {
+      private def startFuturesParty(): Unit = {
         abortFutures = false
 
-        val numWorkers = sys.runtime.availableProcessors
+        val numWorkers = sys.runtime.availableProcessors()
         val pool = Executors.newFixedThreadPool(numWorkers)
-        implicit val ec = ExecutionContext.fromExecutorService(pool)
+        implicit val ec: ExecutionContext = ExecutionContext.fromExecutorService(pool)
 
-        /*
-            Create futures equal to the size of the thread pool.
-            Each future spawns a new one when it's done, to create
-            back-pressure
-         */
-        for (threadIdx <- 1 to numWorkers) {
-          inviteFutureToTheParty()
+        // Create futures equal to the size of the thread pool.
+        for (idx <- 1 to numWorkers) {
+          inviteFutureToTheParty(idx)
         }
       }
 
-      private def inviteFutureToTheParty(): Future[JValue] = {
+      private def inviteFutureToTheParty(idx: Int): Future[JValue] = {
         val f: Future[JValue] = Future {
-          // some futures will open "5.txt", which does not exist, to simulate error
-          val fileNo = rand.nextInt(5) + 1
-          val r = getClass.getResource(s"/future_file_shock/$fileNo.txt")
-          val content: String = Source.fromURL(r).mkString
-          "file" -> ("name" -> s"$fileNo.txt") ~ ("content" -> content)
+            log.info(s"Starting work on thread ${idx}")
+            Thread.sleep(5000)
+          log.info(s"Finished work on thread ${idx}")
+           "status" -> "success"
         }
 
         f onComplete {
           case Success(json: JValue) => {
             this.writeToYou(json)
-            if (!abortFutures) inviteFutureToTheParty()
+            if (!abortFutures) inviteFutureToTheParty(idx)
           }
           case Failure(t) => {
             log.error(t.getClass.getName)
             this.writeToYou("file" -> ("error" -> t.getClass.getName))
-            if (!abortFutures) inviteFutureToTheParty()
+            if (!abortFutures) inviteFutureToTheParty(idx)
           }
         }
 

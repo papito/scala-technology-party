@@ -98,8 +98,8 @@ TrelloProtocolHandler = ProtocolHandler.extend({
         );
       }
 
-      if (json.futuresStarted != null) {
-        self.viewModel.futuresStarted(json.futuresStarted);
+      if (json.workersStarted != null) {
+        self.viewModel.workersStarted(json.workersStarted);
       }
 
       var file = json.file;
@@ -127,16 +127,16 @@ TrelloProtocolHandler = ProtocolHandler.extend({
     this.sendCommand(message);
   },
 
-  startFutures: function() {
+  startWorkers: function() {
     var message = {
-      'action': "startFutures"
+      'action': "startWorkers"
     };
     this.sendCommand(message);
   },
 
-  stopFutures: function() {
+  stopWorkers: function() {
     var message = {
-      'action': "stopFutures"
+      'action': "stopWorkers"
     };
     this.sendCommand(message);
   }
@@ -154,8 +154,8 @@ IndexViewModel = Base.extend({
     // "trello"
     this.totalTrelloCards = ko.observable(0);
 
-    // futures
-    this.futuresStarted = ko.observable(false);
+    // workers
+    this.workersStarted = ko.observable(false);
 
     console.log('Initialized Atmosphere');
     var socket = $.atmosphere;
@@ -181,14 +181,14 @@ IndexViewModel = Base.extend({
   },
   //-----------------------------------------------------------------------------
 
-  startFutures: function() {
-    console.log("Starting futures");
-    this.protocol.startFutures();
+  startWorkers: function() {
+    console.log("Starting workers");
+    this.protocol.startWorkers();
   },
 
-  stopFutures: function() {
-    console.log("Stopping futures");
-    this.protocol.stopFutures();
+  stopWorkers: function() {
+    console.log("Stopping workers");
+    this.protocol.stopWorkers();
   }
 
 });
