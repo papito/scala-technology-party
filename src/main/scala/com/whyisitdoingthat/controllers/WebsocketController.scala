@@ -1,19 +1,17 @@
 package com.whyisitdoingthat.controllers
 
-import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-import org.json4s.JsonAST.{JField, JObject, JString}
-import org.json4s.{DefaultFormats, Formats, JValue, JsonDSL}
-import org.scalatra.SessionSupport
-import org.scalatra._
-import org.scalatra.json.{JValueResult, JacksonJsonSupport}
-import org.scalatra.atmosphere._
-import JsonDSL._
 import akka.actor.Actor.ignoringBehavior
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.routing.RoundRobinPool
+import org.json4s.JsonAST.{JField, JObject, JString}
+import org.json4s.JsonDSL._
+import org.json4s._
+import org.scalatra.{SessionSupport, _}
+import org.scalatra.atmosphere._
+import org.scalatra.json.{JValueResult, JacksonJsonSupport}
 
 import scala.concurrent.ExecutionContext
 
@@ -43,9 +41,8 @@ class WebsocketController
             Thread.sleep(1000)
             println(s"Finished work on actor ${self.path}")
 
-            val resp: JValue = "status" -> "success"
+            val resp: JValue = ("status" -> "success") ~ ("worker" -> self.path.toString)
             msg.client.send(resp)
-            println(s"Sending message to self ${self.path}")
 
             if (!stopWorkers.get) {
               self ! ActorMessage

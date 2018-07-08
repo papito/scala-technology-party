@@ -102,14 +102,8 @@ TrelloProtocolHandler = ProtocolHandler.extend({
         self.viewModel.workersStarted(json.workersStarted);
       }
 
-      var file = json.file;
-      if (file) {
-        if (file.content) {
-          $('#fileContent').html("<strong>" + file.name + ":</strong> " + file.content);
-        }
-        else if (file.error) {
-          $('#fileContent').html("<span class='error'>" + file.name + ": " + file.error + "</span>");
-        }
+      if (json.worker) {
+          $('#workerContent').prepend("<div>Worker " + json.worker + " says HELLO</div>");
       }
     };
 
