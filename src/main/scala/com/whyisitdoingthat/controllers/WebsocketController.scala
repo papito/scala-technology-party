@@ -11,7 +11,8 @@ import org.scalatra._
 import org.scalatra.json.{JValueResult, JacksonJsonSupport}
 import org.scalatra.atmosphere._
 import JsonDSL._
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.Actor.ignoringBehavior
+import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.routing.RoundRobinPool
 
 import scala.concurrent.ExecutionContext
@@ -29,26 +30,28 @@ class WebsocketController
   private val workerPool = Executors.newFixedThreadPool(numWorkers)
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutorService(workerPool)
 
-  case object ActorMessage
+  case class ActorMessage(client: AtmosphereClient)
 
   atmosphere("/") {
     new AtmosphereClient {
       private def uuidJson: JObject = "uid" -> uuid
 
-      class WorkerActor(client: AtmosphereClient) extends Actor {
+      class WorkerActor extends Actor {
         override def receive: Actor.Receive = {
-          case ActorMessage => {
+          case msg: ActorMessage => {
             println(s"Starting work on actor ${self.path}")
-            Thread.sleep(10000)
+            Thread.sleep(1000)
             println(s"Finished work on actor ${self.path}")
 
             val resp: JValue = "status" -> "success"
-            client.send(resp)
+            msg.client.send(resp)
             println(s"Sending message to self ${self.path}")
 
             if (!stopWorkers.get) {
               self ! ActorMessage
             }
+            else {
+              return ignoringBehavior            }
           }
         }
 
@@ -63,9 +66,9 @@ class WebsocketController
 
       private val actorSys = ActorSystem()
       private val akkaRouter: ActorRef = actorSys.actorOf(
-        RoundRobinPool(numWorkers).props(Props(new WorkerActor(this))), "router")
+        RoundRobinPool(numWorkers).props(Props(new WorkerActor())))
 
-      private var stopWorkers: AtomicBoolean = new AtomicBoolean(false)
+      private val stopWorkers: AtomicBoolean = new AtomicBoolean(false)
 
       private def writeToYou(jsonMessage: JValue): Unit = {
         println(s"YOU -> $jsonMessage")
@@ -116,6 +119,7 @@ class WebsocketController
           val json: JValue = message.content
           println(s"WS <- $json")
           stopWorkers.set(true)
+          akkaRouter ! PoisonPill
           this.writeToYou("workersStarted" -> false)
         }
 
@@ -127,12 +131,15 @@ class WebsocketController
         }
 
         case Connected =>
-          println("Client connected")
+          println("!!! Client connected to Server")
 
-        case Disconnected(_, Some(_)) => {
-          actorSys.terminate()
-          println("Client disconnected ")
-        }
+        case Disconnected(ClientDisconnected, _) =>
+          println("!!! Client disconnected from Server")
+          stopWorkers.set(true)
+
+        case Disconnected(ServerDisconnected, _) =>
+          println("!!! Server disconnected from Client")
+          stopWorkers.set(true)
 
         case Error(Some(error)) =>
           error.printStackTrace()
@@ -141,9 +148,9 @@ class WebsocketController
       private def startWorkersParty(): Unit = {
         stopWorkers.set(false)
 
-        for (_ <- 1 to numWorkers) {
+        for (_ <- 1 to 1000) {
           println(s"Sending message to router")
-          akkaRouter ! ActorMessage
+          akkaRouter ! ActorMessage(client=this)
           println(s"Sent message to to router")
         }
       }
